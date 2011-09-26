@@ -10,14 +10,29 @@ function pure (fnc)
 	return fnc
 end
 
+global_meta = getmetatable(_G)
+
+if global_meta == nil then
+	global_meta = {}
+	setmetatable(_G, global_meta)
+end
+
+global_meta.__newindex = function (table, key, value)
+	if type(value) == 'function' then
+		rawset(table, key, pure(value))
+	else
+		rawset(table, key, value)
+	end
+end
+
 print('Hello')
 
-pure_pi = pure(function ()
+function pure_pi ()
 	return math.pi
-end)
+end
 
 print(pure_pi())
 
-pure(function ()
+function print_hello ()
 	print ('Hello')
-end)
+end
