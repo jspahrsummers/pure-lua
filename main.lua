@@ -1,25 +1,12 @@
 require('pure')
 
-unsafely(function ()
-	print('Hello')
-end)
-
-function pure_pi ()
-	return math.pi
+function fib (n)
+	if n <= 1 then
+		return 1
+	else
+		return fib(n - 1) + fib(n - 2)
+	end
 end
 
-unsafely(function ()
-	print(pure_pi())
-end)
-
-print_hello = unsafe(function ()
-	print ('Hello')
-end)
-
-print_hello()
-
-impure_failure = function ()
-	print ('Hello')
-end
-
-impure_failure()
+print('Hello')
+print(fib(4))
