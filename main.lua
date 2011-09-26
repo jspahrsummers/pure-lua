@@ -1,12 +1,17 @@
 dofile('pure.lua')
+setfenv(1, purity_whitelist)
 
-print('Hello')
+unsafely(function ()
+	print('Hello')
+end)
 
 function pure_pi ()
 	return math.pi
 end
 
-print(pure_pi())
+unsafely(function ()
+	print(pure_pi())
+end)
 
 print_hello = unsafe(function ()
 	print ('Hello')

@@ -32,6 +32,9 @@ function pure (func)
 	return func
 end
 
+-- Save the existing (impure) environment to use with unsafe functions.
+local _existing_env = _G
+
 -- Defines 'func' as being an impure function, with access to all global definitions.
 -- This can be used to escape a pure environment.
 function unsafe (func)
@@ -45,11 +48,18 @@ function unsafe (func)
 	}
 
 	setmetatable(table, mt)
+	setfenv(func, _existing_env)
 	return table
+end
+
+-- Immediately executes 'func' as an impure function.
+function unsafely (func)
+	return unsafe(func)()
 end
 
 purity_whitelist.pure = pure
 purity_whitelist.unsafe = unsafe
+purity_whitelist.unsafely = unsafely
 
 do
 	-- Retrieve the metatable for the global environment, or create one if none exists.
@@ -58,6 +68,17 @@ do
 	if global_mt == nil then
 		global_mt = {}
 		setmetatable(_G, global_mt)
+	end
+
+	-- Use this metatable for the whitelist environment too.
+	setmetatable(purity_whitelist, global_mt)
+
+	global_mt.__index = function(table, key)
+		if table ~= purity_whitelist then
+			return purity_whitelist[key]
+		else
+			return nil
+		end
 	end
 
 	-- When trying to set a new definition globally, validate purity.
