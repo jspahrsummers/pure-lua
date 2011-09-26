@@ -55,7 +55,7 @@ end
 global_mt.__newindex = function (table, key, value)
 	-- Functions are sandboxed to be pure.
 	if type(value) == 'function' then
-		rawset(table, key, pure(value))
+		rawset(pure_env, key, pure(value))
 
 	-- ... except for impure functions.
 	elseif type(value) == 'table' and value._unsafe_function then
@@ -66,6 +66,9 @@ global_mt.__newindex = function (table, key, value)
 		rawset(table, key, value)
 	end
 end
+
+-- If lookup fails in global environment, check pure environment.
+global_mt.__index = pure_env
 
 -- Lock out modifications in the pure environment
 pure_mt.__newindex = function (table, key, value)
