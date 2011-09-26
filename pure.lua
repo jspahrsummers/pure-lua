@@ -38,11 +38,6 @@ function unsafe (func)
 	return table
 end
 
--- Immediately executes 'func' as an impure function.
-function unsafely (func)
-	return unsafe(func)()
-end
-
 -- Retrieve the metatable for the global environment, or create one if none exists.
 local global_mt = getmetatable(_G)
 
