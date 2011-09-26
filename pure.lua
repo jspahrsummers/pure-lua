@@ -1,3 +1,5 @@
+require('util')
+
 -- A whitelist for global symbols available to pure functions.
 purity_whitelist = {}
 purity_whitelist.string = string
@@ -5,25 +7,8 @@ purity_whitelist.purity_whitelist = purity_whitelist
 purity_whitelist._G = purity_whitelist
 
 do
-	-- Returns a copy of 't', but with the specified keys removed.
-	local table_copy_except = function (t, ...)
-		local u = {}
-
-		for k, v in pairs(t)
-		do
-			u[k] = v
-		end
-
-		for i, v in ipairs(arg)
-		do
-			u[v] = nil
-		end
-
-		return setmetatable(u, getmetatable(t))
-	end
-
 	-- Blacklist math.random() and math.randomseed() for pure functions.
-	purity_whitelist.math = table_copy_except(math, 'random', 'randomseed')
+	purity_whitelist.math = util.table_copy_except(math, 'random', 'randomseed')
 end
 
 -- Returns 'func' sandboxed to only have access to pure standard library functions.
