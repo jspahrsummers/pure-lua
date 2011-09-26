@@ -29,7 +29,7 @@ function util.table_tostring (t)
 	return str .. "}"
 end
 
--- Compares the keys and values of 'tableA' and 'tableB', returning whether they were equal.
+-- Compares the keys and values of 'tableA' and 'tableB', returning whether they are equal.
 function util.table_eq (tableA, tableB)
 	for k, v in pairs(tableA)
 	do
@@ -39,6 +39,26 @@ function util.table_eq (tableA, tableB)
 	for k, v in pairs(tableB)
 	do
 		if v ~= tableA[k] then return false end
+	end
+
+	return true
+end
+
+-- Returns 'key' from 'table', based on an equality comparison with the keys present.
+function util.table_slow_index (table, key)
+	for k, v in pairs(table)
+	do
+		if k == key then return v end
+	end
+
+	return nil
+end
+
+-- Compares the values of 'tableA' and 'tableB' in order, returning whether they are equal.
+function util.itable_eq (tableA, tableB)
+	for i, v in ipairs(tableA)
+	do
+		if v ~= tableB[i] then return false end
 	end
 
 	return true

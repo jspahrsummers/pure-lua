@@ -15,5 +15,6 @@ function degToRad (n)
 end
 
 print('Hello')
-print(fib(4))
+print(fib(40))
+print(fib(80))
 print(degToRad(180))
