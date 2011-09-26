@@ -4,7 +4,7 @@ util = {}
 function util.table_copy_except (t, ...)
 	local u = {}
 
-	for k, v in _G.pairs(t)
+	for k, v in pairs(t)
 	do
 		u[k] = v
 	end

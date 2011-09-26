@@ -1,18 +1,24 @@
 require('util')
 
 -- A whitelist for global symbols available to pure functions.
-local purity_whitelist = {}
-purity_whitelist.string = string
-purity_whitelist._G = purity_whitelist
+local pure_env = {}
+pure_env.string = string
+pure_env.util = util
+pure_env._G = pure_env
 
-do
-	-- Blacklist math.random() and math.randomseed() for pure functions.
-	purity_whitelist.math = util.table_copy_except(math, 'random', 'randomseed')
-end
+-- Blacklist math.random() and math.randomseed() for pure functions.
+pure_env.math = util.table_copy_except(math, 'random', 'randomseed')
+
+-- Set up a metatable for the pure environment
+local pure_mt = {}
+setmetatable(pure_env, pure_mt)
+
+-- Lock the pure environment's metatable
+pure_mt.__metatable = pure_mt
 
 -- Returns 'func' sandboxed to only have access to pure standard library functions.
 function pure (func)
-	setfenv(func, purity_whitelist)
+	setfenv(func, pure_env)
 	return func
 end
 
@@ -37,28 +43,31 @@ function unsafely (func)
 	return unsafe(func)()
 end
 
-do
-	-- Retrieve the metatable for the global environment, or create one if none exists.
-	local global_mt = getmetatable(_G)
+-- Retrieve the metatable for the global environment, or create one if none exists.
+local global_mt = getmetatable(_G)
 
-	if global_mt == nil then
-		global_mt = {}
-		setmetatable(_G, global_mt)
+if global_mt == nil then
+	global_mt = {}
+	setmetatable(_G, global_mt)
+end
+
+-- When trying to set a new definition globally, validate purity.
+global_mt.__newindex = function (table, key, value)
+	-- Functions are sandboxed to be pure.
+	if type(value) == 'function' then
+		rawset(table, key, pure(value))
+
+	-- ... except for impure functions.
+	elseif type(value) == 'table' and value._unsafe_function then
+		rawset(table, key, value._func)
+
+	-- Anything else is taken to be a primitive data type not subject to restrictions.
+	else
+		rawset(table, key, value)
 	end
+end
 
-	-- When trying to set a new definition globally, validate purity.
-	global_mt.__newindex = function (table, key, value)
-		-- Functions are sandboxed to be pure.
-		if type(value) == 'function' then
-			rawset(table, key, pure(value))
-
-		-- ... except for impure functions.
-		elseif type(value) == 'table' and value._unsafe_function then
-			rawset(table, key, value._func)
-
-		-- Anything else is taken to be a primitive data type not subject to restrictions.
-		else
-			rawset(table, key, value)
-		end
-	end
+-- Lock out modifications in the pure environment
+pure_mt.__newindex = function (table, key, value)
+	error("Cannot set variables in pure environment", 2)
 end
