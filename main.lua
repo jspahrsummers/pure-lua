@@ -1,4 +1,4 @@
-dofile('pure.lua')
+require('pure')
 setfenv(1, purity_whitelist)
 
 unsafely(function ()
