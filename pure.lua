@@ -70,7 +70,14 @@ global_mt.__index = pure_env
 
 -- Defines a constant.
 define = function (key, value)
-	global_env.rawset(pure_env, util.deep_copy(key), util.deep_copy(value))
+	local deepKey = util.deep_copy(key)
+	local existingValue = global_env.rawget(pure_env, deepKey)
+
+	if existingValue then
+		global_env.error("Constant '" .. key .. "' already defined as: " .. global_env.tostring(existingValue), 2)
+	else
+		global_env.rawset(pure_env, deepKey, util.deep_copy(value))
+	end
 end
 
 -- Error out on lookups in the pure environment that have been blacklisted
