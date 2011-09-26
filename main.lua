@@ -8,5 +8,12 @@ function fib (n)
 	end
 end
 
+define('pi', 3.14159)
+
+function degToRad (n)
+	return n * (pi / 180)
+end
+
 print('Hello')
 print(fib(4))
+print(degToRad(180))

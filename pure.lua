@@ -38,12 +38,15 @@ function unsafe (func)
 	return table
 end
 
+-- Save global environment
+local global_env = _G
+
 -- Retrieve the metatable for the global environment, or create one if none exists.
-local global_mt = getmetatable(_G)
+local global_mt = getmetatable(global_env)
 
 if global_mt == nil then
 	global_mt = {}
-	setmetatable(_G, global_mt)
+	setmetatable(global_env, global_mt)
 end
 
 -- When trying to set a new definition globally, validate purity.
@@ -67,10 +70,19 @@ global_mt.__index = pure_env
 
 -- Defines a constant.
 define = function (key, value)
-	rawset(pure_env, util.deep_copy(key), util.deep_copy(value))
+	global_env.rawset(pure_env, util.deep_copy(key), util.deep_copy(value))
+end
+
+-- Error out on lookups in the pure environment that have been blacklisted
+pure_mt.__index = function (table, key)
+	if table == pure_env then
+		error("'" .. key .. "' does not exist in pure environment", 2)
+	else
+		return nil
+	end
 end
 
 -- Lock out modifications in the pure environment
 pure_mt.__newindex = function (table, key, value)
-	error("Cannot set variables in pure environment", 2)
+	error("Cannot set '" .. key .. "' in pure environment", 2)
 end
