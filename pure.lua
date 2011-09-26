@@ -65,6 +65,11 @@ end
 -- If lookup fails in global environment, check pure environment.
 global_mt.__index = pure_env
 
+-- Defines a constant.
+define = function (key, value)
+	rawset(pure_env, util.deep_copy(key), util.deep_copy(value))
+end
+
 -- Lock out modifications in the pure environment
 pure_mt.__newindex = function (table, key, value)
 	error("Cannot set variables in pure environment", 2)
