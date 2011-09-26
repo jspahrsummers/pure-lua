@@ -1,5 +1,4 @@
 require('pure')
-setfenv(1, purity_whitelist)
 
 unsafely(function ()
 	print('Hello')
