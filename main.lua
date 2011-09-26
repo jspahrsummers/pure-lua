@@ -13,3 +13,9 @@ print_hello = unsafe(function ()
 end)
 
 print_hello()
+
+impure_failure = function ()
+	print ('Hello')
+end
+
+impure_failure()
