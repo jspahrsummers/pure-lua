@@ -1,20 +1,109 @@
 require('util')
 
--- A whitelist for global symbols available to pure functions.
-local pure_env = {}
-pure_env.string = string
-pure_env.util = util
-pure_env._G = pure_env
-
--- Blacklist math.random() and math.randomseed() for pure functions.
-pure_env.math = util.table_copy_except(math, 'random', 'randomseed')
-
 -- Set up a metatable for the pure environment
 local pure_mt = {}
-setmetatable(pure_env, pure_mt)
 
 -- Lock the pure environment's metatable
 pure_mt.__metatable = pure_mt
+
+-- A whitelist for 'string' functions available to pure functions
+local string_whitelist = {
+	["byte"] = string.byte,
+	["char"] = string.char,
+	["find"] = string.find,
+	["format"] = string.format,
+	["gmatch"] = string.gmatch,
+	["gsub"] = string.gsub,
+	["len"] = string.len,
+	["lower"] = string.lower,
+	["match"] = string.match,
+	["rep"] = string.rep,
+	["reverse"] = string.reverse,
+	["sub"] = string.sub,
+	["upper"] = string.upper
+}
+
+setmetatable(string_whitelist, pure_mt)
+
+-- A whitelist for 'table' functions available to pure functions
+local table_whitelist = {
+	["insert"] = table.insert,
+	["maxn"] = table.maxn,
+	["remove"] = table.remove,
+	["sort"] = table.sort
+}
+
+setmetatable(table_whitelist, pure_mt)
+
+-- A whitelist for 'math' functions available to pure functions
+local math_whitelist = {
+	["abs"] = math.abs,
+	["acos"] = math.acos,
+	["asin"] = math.asin,
+	["atan"] = math.atan,
+	["atan2"] = math.atan2,
+	["ceil"] = math.ceil,
+	["cos"] = math.cos,
+	["cosh"] = math.cosh,
+	["deg"] = math.deg,
+	["exp"] = math.exp,
+	["floor"] = math.floor,
+	["fmod"] = math.fmod,
+	["frexp"] = math.frexp,
+	["huge"] = math.huge,
+	["ldexp"] = math.ldexp,
+	["log"] = math.log,
+	["log10"] = math.log10,
+	["max"] = math.max,
+	["min"] = math.min,
+	["modf"] = math.modf,
+	["pi"] = math.pi,
+	["pow"] = math.pow,
+	["rad"] = math.rad,
+	["sin"] = math.sin,
+	["sinh"] = math.sinh,
+	["sqrt"] = math.sqrt,
+	["tan"] = math.tan,
+	["tanh"] = math.tanh
+}
+
+setmetatable(math_whitelist, pure_mt)
+
+-- A whitelist for 'os' functions available to pure functions
+local os_whitelist = {
+	["difftime"] = os.difftime
+}
+
+setmetatable(os_whitelist, pure_mt)
+
+-- A whitelist for global symbols available to pure functions
+local pure_env = {
+	["ipairs"] = ipairs,
+	["next"] = next,
+	["pairs"] = pairs,
+	["select"] = select,
+	["tonumber"] = tonumber,
+	["tostring"] = tostring,
+	["type"] = type,
+	["unpack"] = unpack,
+	["_VERSION"] = _VERSION,
+
+	["math"] = math_whitelist,
+	["os"] = os_whitelist,
+	["string"] = string_whitelist,
+	["table"] = table_whitelist,
+
+	-- Should these really be available?
+	["assert"] = assert,
+	["error"] = error,
+	["pcall"] = pcall,
+	["xpcall"] = xpcall
+}
+
+setmetatable(pure_env, pure_mt)
+
+-- The pure environment's global environment is itself
+pure_env._G = pure_env
 
 -- Save global environment
 local global_env = _G
@@ -31,7 +120,7 @@ local arg_mt = {
 	__eq = util.itable_eq
 }
 
--- Returns 'func' sandboxed to only have access to pure standard library functions.
+-- Returns 'func' sandboxed to only have access to pure standard library functions
 function pure (func)
 	local memo = {}
 	setmetatable(memo, memo_mt)
