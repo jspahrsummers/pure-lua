@@ -67,3 +67,5 @@ print(h(3))
 print(h(3, 5))
 print(h(3, 6))
 
+print(util.table_tostring(functional.flatten({ { 5 }, {{{{ "hello" }}}}, {{ "bar" }} })))
+

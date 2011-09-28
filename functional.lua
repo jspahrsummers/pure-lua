@@ -173,6 +173,30 @@ module.unzip = function (table)
 	return keys, values
 end
 
+-- Flattens all recursive lists within 'list' into a one-dimensional list.
+local flatten
+
+flatten = function (list)
+	local result = {}
+
+	for i, v in ipairs(table)
+	do
+		if type(v) == "table" then
+			local flattened = flatten(v)
+			for i, v in ipairs(flattened)
+			do
+				result.insert(v)
+			end
+		else
+			result.insert(v)
+		end
+	end
+
+	return result
+end
+
+module.flatten = flatten
+
 -- Sandbox and export the functions in this module under a 'functional' namespace
 functional = module.map_pairs(module, function (name, func)
 	return name, pure.sandbox(func)
