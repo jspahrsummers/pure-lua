@@ -1,6 +1,6 @@
+require('util')
 require('pure')
 require('functional')
-require('util')
 
 function fib (n)
 	if n <= 1 then

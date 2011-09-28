@@ -110,37 +110,9 @@ pure_env._G = pure_env
 -- Save global environment
 local global_env = _G
 
--- Metatable for memoization
-local memo_mt = {
-	__mode = "v",
-	__tostring = util.table_tostring,
-	__index = util.table_slow_index
-}
-
--- Metatable for argument tables
-local arg_mt = {
-	__eq = util.itable_eq
-}
-
 -- Returns 'func' sandboxed to only have access to pure standard library functions
 function pure.sandbox (func)
-	local memo = {}
-	setmetatable(memo, memo_mt)
-
-	setfenv(func, pure_env)
-	return function (...)
-		local arg = { ... }
-		setmetatable(arg, arg_mt)
-
-		local result = memo[arg]
-
-		if result == nil then
-			result = func(...)
-			memo[arg] = result
-		end
-
-		return result
-	end
+	return util.memoize(func, pure_env)
 end
 
 -- Defines 'func' as being an impure function, with access to all global definitions.

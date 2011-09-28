@@ -82,3 +82,45 @@ function util.deep_copy (value)
 		return value
 	end
 end
+
+-- Metatable for memoization
+local memo_mt = {
+	__mode = "v",
+	__tostring = util.table_tostring,
+	__index = util.table_slow_index
+}
+
+memo_mt.__metatable = memo_mt
+
+-- Metatable for argument tables
+local arg_mt = {
+	__eq = util.itable_eq
+}
+
+arg_mt.__metatable = arg_mt
+
+-- Returns a function which will call 'func' and memoize results, such that the same arguments will use cached results.
+-- This implies that the return value of 'func' is identical given identical arguments.
+-- If 'env' is provided, this is a function environment to use when executing 'func'.
+function util.memoize (func, env)
+	local memo = {}
+	setmetatable(memo, memo_mt)
+
+	if env then
+		setfenv(func, env)
+	end
+
+	return function (...)
+		local arg = { ... }
+		setmetatable(arg, arg_mt)
+
+		local result = memo[arg]
+
+		if result == nil then
+			result = func(...)
+			memo[arg] = result
+		end
+
+		return result
+	end
+end
