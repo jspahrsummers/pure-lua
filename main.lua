@@ -1,4 +1,6 @@
 require('pure')
+require('functional')
+require('util')
 
 function fib (n)
 	if n <= 1 then
@@ -18,3 +20,7 @@ print('Hello')
 print(fib(40))
 print(fib(80))
 print(degToRad(180))
+
+print(util.table_tostring(functional.map({ 'a', 'b', 'c'}, function (str)
+	return str .. 'bar'
+end)))
