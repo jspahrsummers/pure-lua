@@ -115,6 +115,23 @@ module.partition = function (lst, func)
 	return pass, fail
 end
 
+-- Returns two tables: one composed of the pairs from 'table' that passed predicate 'func', and one composed of pairs that failed the predicate.
+module.partition_pairs = function (table, func)
+	local pass = {}
+	local fail = {}
+
+	for k, v in pairs(table)
+	do
+		if func(k, v) then
+			pass[k] = v
+		else
+			fail[k] = v
+		end
+	end
+
+	return pass, fail
+end
+
 -- Sandbox and export the functions in this module under a 'functional' namespace
 functional = module.map_pairs(module, function (name, func)
 	return name, pure.sandbox(func)
