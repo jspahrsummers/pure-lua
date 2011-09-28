@@ -117,10 +117,10 @@ function util.memoize (func, env)
 		local result = memo[arg]
 
 		if result == nil then
-			result = func(...)
+			result = { func(...) }
 			memo[arg] = result
 		end
 
-		return result
+		return unpack(result)
 	end
 end
