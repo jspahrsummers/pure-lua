@@ -2,9 +2,12 @@ require('util')
 require('functional')
 
 match = {}
+
+-- Represents a wildcard in a pattern matching definition
 any = {}
 
-function match.test (pattern, arg)
+-- Returns whether 'arg' satisfies 'pattern'.
+local function test (pattern, arg)
 	if pattern == arg then
 		return true
 	elseif pattern == any then
@@ -14,6 +17,10 @@ function match.test (pattern, arg)
 	return false
 end
 
+-- Defines a pattern-matching function.
+-- The first argument to this function must be a table representing an argument list to match against. Arguments can be patterns such as 'any', or literal values.
+-- The second argument to this function must be a function to execute if the associated pattern matches. It can take as many arguments as the pattern matches against.
+-- There can be any even number of successive arguments after the aforementioned, as long as they follow the pattern of "pattern, function."
 function match.define (...)
 	local params
 	local funcs
@@ -37,7 +44,7 @@ function match.define (...)
 
 				for i, pattern in ipairs(param)
 				do
-					if not match.test(pattern, args[i]) then
+					if not test(pattern, args[i]) then
 						matched = false
 						break
 					end
