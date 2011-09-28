@@ -132,6 +132,47 @@ module.partition_pairs = function (table, func)
 	return pass, fail
 end
 
+-- Creates a table by combining the given lists of keys and values.
+-- The key at each index in 'keys' is combined with the value at the same index in 'values'.
+-- The two lists must have the same number of elements.
+-- It is an error to have two identical keys, as doing so would result in an indeterminate result.
+module.zip = function (keys, values)
+	local table = {}
+	local count = # keys
+	
+	if count ~= # values then
+		error("The lists of keys and values provided to zip() must have the same number of elements", 2)
+	end
+
+	for i = 1, count
+	do
+		local key = keys[i]
+
+		if table[key] ~= nil then
+			error("Cannot have two identical keys in the list provided to zip()", 2)
+		end
+
+		table[key] = values[i]
+	end
+
+	return table
+end
+
+-- Returns a list of the keys of 'table', and a list of the values of 'table', respectively.
+-- The order of the lists is undefined, except that the index of a given key matches the index of its associated value.
+module.unzip = function (table)
+	local keys = {}
+	local values = {}
+
+	for k, v in pairs(table)
+	do
+		keys.insert(k)
+		values.insert(v)
+	end
+
+	return keys, values
+end
+
 -- Sandbox and export the functions in this module under a 'functional' namespace
 functional = module.map_pairs(module, function (name, func)
 	return name, pure.sandbox(func)
