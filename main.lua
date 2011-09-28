@@ -24,3 +24,7 @@ print(degToRad(180))
 print(util.table_tostring(functional.map({ 'a', 'b', 'c'}, function (str)
 	return str .. 'bar'
 end)))
+
+print(util.table_tostring(functional.filter({ 'a', 'b', 'c'}, function (str)
+	return (string.sub(str, 0, 1) == 'a')
+end)))
