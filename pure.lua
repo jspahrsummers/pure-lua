@@ -1,5 +1,7 @@
 require('util')
 
+pure = {}
+
 -- Set up a metatable for the pure environment
 local pure_mt = {}
 
@@ -121,7 +123,7 @@ local arg_mt = {
 }
 
 -- Returns 'func' sandboxed to only have access to pure standard library functions
-function pure (func)
+function pure.sandbox (func)
 	local memo = {}
 	setmetatable(memo, memo_mt)
 
@@ -143,7 +145,7 @@ end
 
 -- Defines 'func' as being an impure function, with access to all global definitions.
 -- This can be used to escape a pure environment.
-function unsafe (func)
+function pure.unsafe (func)
 	local mt = {
 		__call = func
 	}
@@ -166,7 +168,7 @@ if global_mt == nil then
 end
 
 -- Defines a constant.
-define = function (key, value)
+function pure.define (key, value)
 	local deepKey = util.deep_copy(key)
 	local existingValue = global_env.rawget(pure_env, deepKey)
 
@@ -195,7 +197,7 @@ end
 global_mt.__newindex = function (table, key, value)
 	-- Functions are sandboxed to be pure.
 	if type(value) == 'function' then
-		rawset(pure_env, key, pure(value))
+		rawset(pure_env, key, pure.sandbox(value))
 
 	-- ... except for impure functions.
 	elseif type(value) == 'table' and value._unsafe_function then
@@ -209,3 +211,6 @@ end
 
 -- If lookup fails in global environment, check pure environment.
 global_mt.__index = pure_env
+
+-- Lock out modifications to 'pure' module table
+setmetatable(pure, pure_mt)

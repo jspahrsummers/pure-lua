@@ -10,13 +10,17 @@ function fib (n)
 	end
 end
 
-define('pi', 3.14159)
+pure.define('pi', 3.14159)
 
 function degToRad (n)
 	return n * (pi / 180)
 end
 
-print('Hello')
+print_hello = pure.unsafe(function ()
+	print('Hello')
+end)
+
+print_hello()
 print(fib(40))
 print(fib(80))
 print(degToRad(180))
