@@ -31,19 +31,21 @@ function match.define (...)
 
 		for i, param in ipairs(params)
 		do
-			local func = funcs[i]
-			local matched = false
+			if # param == # args then
+				local matched = true
+				local func = funcs[i]
 
-			for i, pattern in ipairs(param)
-			do
-				if match.test(pattern, args[i]) then
-					matched = true
-					break
+				for i, pattern in ipairs(param)
+				do
+					if not match.test(pattern, args[i]) then
+						matched = false
+						break
+					end
 				end
-			end
 
-			if matched then
-				return func(...)
+				if matched then
+					return func(...)
+				end
 			end
 		end
 

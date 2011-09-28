@@ -53,12 +53,19 @@ print(g(bar, 1, 2))
 ]]
 
 local f = match.define(
-	{ 1 }, (function () return 5 end),
+	{ 1 }, function () return 5 end,
 	{ 2 }, function () return 11 end,
-	{ any }, function (x) return x * 2 end
+	{ any }, function (x) return x * 2 end,
+	{ any, 5 }, function (x) return x / 2 end,
+	{ any, any },
+		function (x, y)
+			return x * y
+		end
 )
 
 print(f(1))
 print(f(2))
 print(f(3))
+print(f(3, 5))
+print(f(3, 6))
 
