@@ -64,12 +64,21 @@ function functional.curry (func)
 	end
 end
 
--- Binds the first arguments of 'func' to the given values.
-function functional.bind (func, ...)
+-- Binds the first arguments of 'func' to the given values. The first argument of 'bindr' is bound to the first argument of 'func', and so on.
+function functional.bindl (func, ...)
 	local args = { ... }
 
 	return function (...)
 		return func(unpack(args), ...)
+	end
+end
+
+-- Binds the last arguments of 'func' to the given values. The last argument of 'bindr' is bound to the last argument to 'func', and so on.
+function functional.bindr (func, ...)
+	local args = { ... }
+
+	return function (...)
+		return func(..., unpack(args))
 	end
 end
 
