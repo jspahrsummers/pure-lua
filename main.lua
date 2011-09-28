@@ -1,9 +1,8 @@
 require('util')
 require('match')
---require('pure')
+require('pure')
 require('functional')
 
---[[
 function fib (n)
 	if n <= 1 then
 		return 1
@@ -50,9 +49,8 @@ print(bar)
 
 local g = functional.uncurry(f)
 print(g(bar, 1, 2))
-]]
 
-local f = match.define(
+local h = match.define(
 	{ 1 }, function () return 5 end,
 	{ 2 }, function () return 11 end,
 	{ any }, function (x) return x * 2 end,
@@ -63,9 +61,9 @@ local f = match.define(
 		end
 )
 
-print(f(1))
-print(f(2))
-print(f(3))
-print(f(3, 5))
-print(f(3, 6))
+print(h(1))
+print(h(2))
+print(h(3))
+print(h(3, 5))
+print(h(3, 6))
 
