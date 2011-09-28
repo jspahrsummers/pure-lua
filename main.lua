@@ -28,3 +28,12 @@ end)))
 print(util.table_tostring(functional.filter({ 'a', 'b', 'c'}, function (str)
 	return (string.sub(str, 0, 1) == 'a')
 end)))
+
+local str = 'foobar'
+local f = functional.curry(string.sub)
+local bar = f(str)(4)
+
+print(bar)
+
+local g = functional.uncurry(f)
+print(g(bar, 1, 2))

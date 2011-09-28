@@ -54,3 +54,32 @@ function functional.filter_pairs (table, func)
 
 	return result
 end
+
+-- Curries 'func', returning a function that takes the first argument to 'func', and which returns a function taking all the other arguments.
+function functional.curry (func)
+	return function (a)
+		return function (...)
+			return func(a, ...)
+		end
+	end
+end
+
+-- Binds the first arguments of 'func' to the given values.
+function functional.bind (func, ...)
+	local args = { ... }
+
+	return function (...)
+		return func(unpack(args), ...)
+	end
+end
+
+-- For the given functor, returns a function which takes one more argument than 'func'.
+-- The additional argument will be passed into the function returned by 'func', and the result of that call returned.
+function functional.uncurry (func)
+	return function(...)
+		local args = { ... }
+
+		local f = func(args[1])
+		return f(unpack(args, 2))
+	end
+end
