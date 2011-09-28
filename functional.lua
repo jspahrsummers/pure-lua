@@ -98,6 +98,23 @@ module.uncurry = function (func)
 	end
 end
 
+-- Returns two lists: one composed of the elements from 'lst' that passed predicate 'func', and one composed of elements that failed the predicate.
+module.partition = function (lst, func)
+	local pass = {}
+	local fail = {}
+
+	for i, v in ipairs(lst)
+	do
+		if func(v) then
+			table.insert(pass, v)
+		else
+			table.insert(fail, v)
+		end
+	end
+
+	return pass, fail
+end
+
 -- Sandbox and export the functions in this module under a 'functional' namespace
 functional = module.map_pairs(module, function (name, func)
 	return name, pure.sandbox(func)

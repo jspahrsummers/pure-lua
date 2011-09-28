@@ -25,6 +25,13 @@ print(fib(40))
 print(fib(80))
 print(degToRad(180))
 
+pass, fail = functional.partition({ 'a', 1, 'b', 2, 'c', 5 }, function (item)
+	return type(item) == "number"
+end)
+
+print(util.table_tostring(pass))
+print(util.table_tostring(fail))
+
 print(util.table_tostring(functional.map({ 'a', 'b', 'c'}, function (str)
 	return str .. 'bar'
 end)))
