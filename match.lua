@@ -10,7 +10,7 @@ function match.test (pattern, arg)
 	elseif pattern == any then
 		return true
 	end
-	
+
 	return false
 end
 

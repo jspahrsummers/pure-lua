@@ -179,11 +179,7 @@ end
 
 -- Error out on lookups in the pure environment that have been blacklisted
 pure_mt.__index = function (table, key)
-	if table == pure_env then
-		error("'" .. key .. "' does not exist in pure environment", 2)
-	else
-		return nil
-	end
+	error("'" .. key .. "' does not exist in pure environment", 2)
 end
 
 -- When trying to set a new definition globally, validate purity.
@@ -203,4 +199,6 @@ global_mt.__newindex = function (table, key, value)
 end
 
 -- If lookup fails in global environment, check pure environment.
-global_mt.__index = pure_env
+global_mt.__index = function (table, key)
+	return rawget(pure_env, key)
+end
