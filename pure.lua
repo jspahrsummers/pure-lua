@@ -107,11 +107,25 @@ setmetatable(pure_env, pure_mt)
 -- The pure environment's global environment is itself
 pure_env._G = pure_env
 
+-- Whether the pure environment has been locked down.
+-- This is set to 'true' when the first sandboxed function has been defined.
+-- Before this point, the pure environment can be modified.
+local pure_env_locked = false
+
 -- Save global environment
 local global_env = _G
 
--- Returns 'func' sandboxed to only have access to pure standard library functions
+-- Returns 'func' sandboxed to only have access to pure functions and constants
 function pure.sandbox (func)
+	if not pure_env_locked then
+		-- Lock out modifications in the pure environment
+		pure_mt.__newindex = function (table, key, value)
+			error("Cannot set '" .. key .. "' in pure environment", 2)
+		end
+
+		pure_env_locked = true
+	end
+	
 	return util.memoize(func, pure_env)
 end
 
@@ -129,6 +143,18 @@ function pure.unsafe (func)
 
 	setmetatable(table, mt)
 	return table
+end
+
+-- Imports 'symbol' into the pure environment as 'name'. This should only be used for functions that are truly pure. Anything else will produce undefined results when called from a pure function.
+-- This function is only usable before the first pure function has been defined.
+-- Returns the imported value.
+function pure.import (name, symbol)
+	if pure_env_locked then
+		error("Cannot import '" .. name .. "' into the pure environment after a pure function has been defined", 2)
+	end
+
+	pure_env[name] = symbol
+	return symbol
 end
 
 -- Retrieve the metatable for the global environment, or create one if none exists.
@@ -160,11 +186,6 @@ pure_mt.__index = function (table, key)
 	end
 end
 
--- Lock out modifications in the pure environment
-pure_mt.__newindex = function (table, key, value)
-	error("Cannot set '" .. key .. "' in pure environment", 2)
-end
-
 -- When trying to set a new definition globally, validate purity.
 global_mt.__newindex = function (table, key, value)
 	-- Functions are sandboxed to be pure.
@@ -183,6 +204,3 @@ end
 
 -- If lookup fails in global environment, check pure environment.
 global_mt.__index = pure_env
-
--- Lock out modifications to 'pure' module table
-setmetatable(pure, pure_mt)
