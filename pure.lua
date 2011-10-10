@@ -115,7 +115,8 @@ local pure_env_locked = false
 -- Save global environment
 local global_env = _G
 
--- Returns 'func' sandboxed to only have access to pure functions and constants
+-- Returns 'func' sandboxed to only have access to pure functions and constants.
+-- 'func' may also be a string to compile into a pure function.
 function pure.sandbox (func)
 	if not pure_env_locked then
 		-- Lock out modifications in the pure environment
@@ -124,6 +125,10 @@ function pure.sandbox (func)
 		end
 
 		pure_env_locked = true
+	end
+
+	if type(func) == "string" then
+		func = util.memoized_loadstring(func)
 	end
 	
 	return util.memoize(func, pure_env)
