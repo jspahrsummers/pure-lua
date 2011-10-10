@@ -256,6 +256,14 @@ module.foldr = function (func, value, list)
 	return func(head, module.foldr(func, value, tail))
 end
 
+-- Returns a function which takes the first two arguments to 'func' in reverse order, and passes the rest of the arguments through unmodified.
+-- 'func' must accept at least two arguments.
+module.flip = function (func)
+	return function (a, b, ...)
+		return func(b, a, ...)
+	end
+end
+
 -- Sandbox and export the functions in this module under a 'functional' namespace
 functional = module.map_pairs(module, function (name, func)
 	return name, pure.sandbox(func)
