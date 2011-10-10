@@ -124,3 +124,8 @@ function util.memoize (func, env)
 		return unpack(result)
 	end
 end
+
+-- A version of 'loadstring' that will memoize compiled strings,
+-- such that compiling the same string on two different occasions results in the same function.
+util.memoized_loadstring = util.memoize(loadstring)
+
