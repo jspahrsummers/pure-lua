@@ -19,14 +19,15 @@ end
 
 -- Returns the keys and values of 't' as a string.
 function util.table_tostring (t)
-	local str = "{ "
+	local stringElements = {}
 
 	for k, v in pairs(t)
 	do
-		str = str .. tostring(k) .. " = " .. tostring(v) .. ", "
+		local str = "[" .. tostring(k) .. "] = " .. tostring(v)
+		table.insert(stringElements, str)
 	end
 
-	return str .. "}"
+	return "{ " .. table.concat(stringElements, ", ") .. " }"
 end
 
 -- Compares the keys and values of 'tableA' and 'tableB', returning whether they are equal.
