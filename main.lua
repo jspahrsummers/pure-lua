@@ -69,3 +69,6 @@ print(h(3, 6))
 
 print(util.table_tostring(functional.flatten({ { 5 }, {{{{ "hello" }}}}, {{ "bar" }} })))
 
+local tbl = { "foo", 2, 3, "bar", 5.5 }
+print(tostring(functional.head(tbl)))
+print(util.table_tostring(functional.tail(tbl)))

@@ -193,6 +193,45 @@ module.flatten = function (list)
 	return result
 end
 
+-- Returns the first element from 'list', or nil if the list is empty.
+module.head = function (list)
+	if not list or # list == 0 then
+		return nil
+	else
+		return list[1]
+	end
+end
+
+-- Returns all but the first element from 'list'. If 'list' only contains one element, returns an empty list. If 'list' is empty, returns nil.
+module.tail = function (list)
+	local head, tail = module.decons(list)
+
+	if head == nil then
+		return nil
+	else
+		return tail
+	end
+end
+
+-- Returns the head and the tail of 'list', or nil if the list is empty.
+module.decons = function (list)
+	if not list then
+		return nil
+	end
+
+	local count = # list
+	if count == 0 then
+		return nil
+	end
+
+	local tail = {}
+	for i = 2, count do
+		tail[i - 1] = list[i]
+	end
+
+	return list[1], tail
+end
+
 -- Sandbox and export the functions in this module under a 'functional' namespace
 functional = module.map_pairs(module, function (name, func)
 	return name, pure.sandbox(func)
