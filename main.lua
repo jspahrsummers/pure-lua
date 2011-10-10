@@ -72,3 +72,11 @@ print(util.table_tostring(functional.flatten({ { 5 }, {{{{ "hello" }}}}, {{ "bar
 local tbl = { "foo", 2, 3, "bar", 5.5 }
 print(tostring(functional.head(tbl)))
 print(util.table_tostring(functional.tail(tbl)))
+
+local numList = { 2, 3, 4 }
+local sub = function (a, b)
+	return a - b
+end
+
+print(tostring(functional.foldl(sub, 1, numList)))
+print(tostring(functional.foldr(sub, 1, numList)))

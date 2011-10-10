@@ -232,6 +232,30 @@ module.decons = function (list)
 	return list[1], tail
 end
 
+-- Performs a left fold on the elements of 'list', passing 'value' and the first element into 'func'.
+-- The result of 'func' is combined with the second element of 'list' into another call to 'func', and so forth, until the whole list has been reduced down to one element.
+-- If 'list' is empty, 'value' is returned unmodified.
+module.foldl = function (func, value, list)
+	if not list or # list == 0 then
+		return value
+	end
+
+	local head, tail = module.decons(list)
+	return module.foldl(func, func(value, head), tail)
+end
+
+-- Performs a right fold on the elements of 'list', applying 'func' to each successive element of the list and the result of calling 'foldr' on the rest of the list.
+-- The last element of the list is combined with 'value'.
+-- If 'list' is empty, 'value' is returned unmodified.
+module.foldr = function (func, value, list)
+	if not list or # list == 0 then
+		return value
+	end
+
+	local head, tail = module.decons(list)
+	return func(head, module.foldr(func, value, tail))
+end
+
 -- Sandbox and export the functions in this module under a 'functional' namespace
 functional = module.map_pairs(module, function (name, func)
 	return name, pure.sandbox(func)
