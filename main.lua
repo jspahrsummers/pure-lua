@@ -51,8 +51,8 @@ local g = functional.uncurry(f)
 print(g(bar, 1, 2))
 
 local h = match.define(
-	{ 1 }, function () return 5 end,
-	{ 2 }, function () return 11 end,
+	{ 1 }, [[return 5]],
+	{ 2 }, [[return 11]],
 	{ any }, function (x) return x * 2 end,
 	{ any, 5 }, function (x) return x / 2 end,
 	{ any, any },

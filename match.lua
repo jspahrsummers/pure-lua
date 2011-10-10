@@ -25,8 +25,8 @@ function match.define (...)
 	local params
 	local funcs
 
-	funcs, params = functional.partition({ ... }, function (value)
-		return type(value) == "function"
+	params, funcs = functional.partition({ ... }, function (value)
+		return type(value) == "table"
 	end)
 
 	if # params ~= # funcs then
@@ -51,6 +51,10 @@ function match.define (...)
 				end
 
 				if matched then
+					if type(func) == "string" then
+						func = util.memoized_loadstring(func)
+					end
+
 					return func(...)
 				end
 			end
