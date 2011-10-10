@@ -179,16 +179,16 @@ local flatten
 flatten = function (list)
 	local result = {}
 
-	for i, v in ipairs(table)
+	for i, v in ipairs(list)
 	do
 		if type(v) == "table" then
 			local flattened = flatten(v)
-			for i, v in ipairs(flattened)
+			for fi, fv in ipairs(flattened)
 			do
-				result.insert(v)
+				table.insert(result, fv)
 			end
 		else
-			result.insert(v)
+			table.insert(result, v)
 		end
 	end
 
