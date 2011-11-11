@@ -1,5 +1,6 @@
+-{ extension('match') }
+
 require('util')
-require('match')
 require('pure')
 require('functional')
 
@@ -50,22 +51,17 @@ print(bar)
 local g = functional.uncurry(f)
 print(g(bar, 1, 2))
 
-local h = match.define(
-	{ 1 }, [[return 5]],
-	{ 2 }, [[return 11]],
-	{ any }, function (x) return x * 2 end,
-	{ any, 5 }, function (x) return x / 2 end,
-	{ any, any },
-		function (x, y)
-			return x * y
-		end
-)
+local h = function (x)
+	match x with
+	| 1 -> return 5
+	| 2 -> return 11
+	| _ -> return x * 2
+	end
+end
 
 print(h(1))
 print(h(2))
 print(h(3))
-print(h(3, 5))
-print(h(3, 6))
 
 print(util.table_tostring(functional.flatten({ { 5 }, {{{{ "hello" }}}}, {{ "bar" }} })))
 
